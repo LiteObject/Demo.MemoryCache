@@ -1,7 +1,5 @@
-﻿using System;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Runtime.Caching;
-using System.Threading.Tasks;
 
 namespace Demo.MemoryCache
 {
