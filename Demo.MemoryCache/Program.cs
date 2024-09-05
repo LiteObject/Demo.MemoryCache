@@ -3,24 +3,24 @@ using System.Runtime.Caching;
 
 namespace Demo.MemoryCache
 {
-    class Program
+    internal class Program
     {
-        static async Task Main(string[] args)
+        private static async Task Main(string[] args)
         {
-            var jwtString = TokenService.GetJwtToken(5);
+            string jwtString = TokenService.GetJwtToken(5);
 
-            var handler = new JwtSecurityTokenHandler();
-            var token = handler.ReadToken(jwtString) as JwtSecurityToken;
+            JwtSecurityTokenHandler handler = new();
+            JwtSecurityToken? token = handler.ReadToken(jwtString) as JwtSecurityToken;
 
             if (token?.ValidTo != null)
             {
                 DateTime tokenExpiryDate = token.ValidTo;
 
                 Console.WriteLine($"Token Exp Time: {tokenExpiryDate.ToLongTimeString()}, Current UTC: {DateTime.UtcNow.ToLongTimeString()}\n");
-            
+
                 ObjectCache cache = System.Runtime.Caching.MemoryCache.Default;
 
-                CacheItemPolicy policy = new CacheItemPolicy
+                CacheItemPolicy policy = new()
                 {
                     AbsoluteExpiration = new DateTimeOffset(tokenExpiryDate),
                     RemovedCallback = CacheRemovedCallback
@@ -30,11 +30,11 @@ namespace Demo.MemoryCache
 
                 await Task.Delay(3000);
 
-                var cachedToken = cache.Get("token");
-                
+                object cachedToken = cache.Get("token");
+
                 if (cachedToken is JwtSecurityToken t)
                 {
-                    foreach (var claim in t.Claims)
+                    foreach (System.Security.Claims.Claim? claim in t.Claims)
                     {
                         Print($"- {claim.Type}: {claim.Value}", ConsoleColor.Cyan);
                     }
@@ -46,8 +46,8 @@ namespace Demo.MemoryCache
 
         private static void CacheRemovedCallback(CacheEntryRemovedArguments arguments)
         {
-            var cacheItem = arguments.CacheItem;
-            var removedReason = arguments.RemovedReason;
+            CacheItem cacheItem = arguments.CacheItem;
+            CacheEntryRemovedReason removedReason = arguments.RemovedReason;
 
             Print($"\n[UTC Time: {DateTime.UtcNow.ToLongTimeString()}] Cached item \"{cacheItem.Key}\" has been removed. Reason: {removedReason.ToString()}", ConsoleColor.Yellow);
         }

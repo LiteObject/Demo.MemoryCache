@@ -12,21 +12,21 @@ namespace Demo.MemoryCache
 
         public static string GetJwtToken(int expSeconds = 5)
         {
-            var tokenString = string.Empty;
+            string tokenString = string.Empty;
 
             try
             {
-                var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Key));
-                
-                var handler = new JwtSecurityTokenHandler();
+                SymmetricSecurityKey securityKey = new(Encoding.UTF8.GetBytes(Key));
 
-                var claims = new List<Claim>
+                JwtSecurityTokenHandler handler = new();
+
+                List<Claim> claims = new()
                 {
                     new Claim("type2", "value2"),
                     new Claim("expiration", DateTime.UtcNow.AddSeconds(expSeconds).ToLongTimeString()),
                 };
 
-                var secToken1 = handler.CreateEncodedJwt(
+                string secToken1 = handler.CreateEncodedJwt(
                     issuer: "http://www.LiteObjects.com/",
                     audience: null,
                     subject: new ClaimsIdentity(claims),
@@ -63,7 +63,7 @@ namespace Demo.MemoryCache
              * classes are used for asymmetric encryption (AKA public-key encryption)
              **************************************************************************/
 
-            RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
+            RSACryptoServiceProvider rsa = new();
 
             /**************************************************************************
              * If passed false, it returns public key only. If passed
@@ -71,7 +71,7 @@ namespace Demo.MemoryCache
              **************************************************************************/
 
             string keyStr = rsa.ToXmlString(true);
-            
+
             // Get key into parameters  
             /* RSAParameters RSAKeyInfo = RSA.ExportParameters(true);
             Console.WriteLine($"Modulus: {System.Text.Encoding.UTF8.GetString(RSAKeyInfo.Modulus)}");
